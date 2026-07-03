@@ -1,0 +1,1 @@
+{"id":"debug-placeholder","task_type":"debugging","input_prompt":"Fix a traceback without dropping the failing symbol.","repo_context":"Acceptance: root cause and patch.","expected_behavior":"contains patch","quality_checks":["contains_patch"],"risk_level":"medium"}

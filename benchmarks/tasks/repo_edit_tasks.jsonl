@@ -1,0 +1,1 @@
+{"id":"repo-edit-placeholder","task_type":"repo_edit","input_prompt":"Patch a small function and preserve public API.","repo_context":"Acceptance: patch only.","expected_behavior":"contains patch","quality_checks":["contains_patch"],"risk_level":"low"}

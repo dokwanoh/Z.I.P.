@@ -1,0 +1,1 @@
+{"id":"verify-placeholder","task_type":"verification","input_prompt":"Verify command evidence and reproducibility.","repo_context":"Acceptance: command evidence.","expected_behavior":"contains verification","quality_checks":["contains_verification"],"risk_level":"medium"}

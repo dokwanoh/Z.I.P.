@@ -1,0 +1,1 @@
+{"id":"design-placeholder","task_type":"design","input_prompt":"Review a design for accessibility and mobile state.","repo_context":"Acceptance: preserve risks.","expected_behavior":"preserve acceptance","quality_checks":["no_missing_acceptance_criteria"],"risk_level":"high"}

@@ -1,0 +1,6 @@
+name: zip-token-saver
+description: Safely measure and reduce prompt-token waste for coding-agent workflows.
+version: 0.1.0
+entrypoints:
+  measure: scripts/zip_measure.py
+  harness: scripts/zip_harness.py
