@@ -5,6 +5,42 @@ from typing import Iterable, List, Mapping, Sequence
 
 
 @dataclass(frozen=True)
+class ProviderCapabilities:
+    """Provider feature metadata.
+
+    Defaults document the conservative dry-run/unknown-provider posture:
+    no prompt caching, no structured output transport, no server-side state,
+    and string fields set to "none" rather than provider-specific values.
+    """
+
+    supports_prompt_caching: bool = False
+    prompt_cache_mode: str = "none"
+    supports_structured_output: bool = False
+    structured_output_transport: str = "none"
+    supports_server_side_state: bool = False
+    state_handle_name: str = "none"
+
+    def as_json_fields(self) -> Mapping[str, bool | str]:
+        return {
+            "supports_prompt_caching": self.supports_prompt_caching,
+            "prompt_cache_mode": self.prompt_cache_mode,
+            "supports_structured_output": self.supports_structured_output,
+            "structured_output_transport": self.structured_output_transport,
+            "supports_server_side_state": self.supports_server_side_state,
+            "state_handle_name": self.state_handle_name,
+        }
+
+    def as_note(self) -> str:
+        fields = self.as_json_fields()
+        return "; ".join(f"{key}={value}" for key, value in fields.items())
+
+    def cache_status(self) -> str:
+        if self.supports_prompt_caching:
+            return f"supported:{self.prompt_cache_mode}"
+        return "unsupported"
+
+
+@dataclass(frozen=True)
 class BenchmarkTask:
     id: str
     task_type: str
@@ -60,6 +96,14 @@ class BenchmarkResult:
     quality_pass: bool
     latency_ms: int
     notes: str
+    provider: str = "unknown"
+    provider_capabilities: ProviderCapabilities = field(default_factory=ProviderCapabilities)
+    repeat_count: int = 1
+    cache_status: str = "unsupported"
+    latency_variance_ms: float = 0.0
+    latency_stdev_ms: float = 0.0
+    judge_provenance: str = "fablize-deterministic"
+    threshold_summary: str = "quality_score=0.000; pass_threshold>0.820; status=fail"
 
     def as_json_row(self) -> Mapping[str, object]:
         return {
@@ -76,6 +120,14 @@ class BenchmarkResult:
             "quality_pass": self.quality_pass,
             "latency_ms": self.latency_ms,
             "notes": self.notes,
+            "provider": self.provider,
+            **self.provider_capabilities.as_json_fields(),
+            "repeat_count": self.repeat_count,
+            "cache_status": self.cache_status,
+            "latency_variance_ms": self.latency_variance_ms,
+            "latency_stdev_ms": self.latency_stdev_ms,
+            "judge_provenance": self.judge_provenance,
+            "threshold_summary": self.threshold_summary,
         }
 
 

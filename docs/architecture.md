@@ -21,3 +21,5 @@ flowchart TD
 ```
 
 The harness measures baseline and candidate prompt tokens before making any claim. Policies are composable candidates, not global defaults.
+
+KV-cache compression is a separate research track outside this runtime graph. Core Z.I.P. operates on prompt text, policy routing, benchmark rows, and quality-guard decisions; it does not modify inference-layer attention state or serving-stack cache memory.

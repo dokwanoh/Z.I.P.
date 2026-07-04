@@ -18,6 +18,7 @@ LinguaRoom normalizes Korean/English engineering intent. Headroom preserves outp
 
 ```bash
 python -m zip_agent.cli --help
+python -m pip install -e .
 ```
 
 ## Run benchmark
@@ -30,6 +31,18 @@ python -m zip_agent.cli benchmark --dataset benchmarks/tasks/korean_coding_promp
 
 Open `reports/latest.md` after running the command. Dry-run results are clearly marked as fixture-based prompt-token measurements.
 
+## Install
+
+```bash
+python -m pip install -e .
+```
+
+## Model-backed runs
+
+If `ZIP_MODEL_ENDPOINT` and `ZIP_MODEL_NAME` are set, the harness uses a live OpenAI-compatible completion endpoint instead of dry-run fixtures. Otherwise it stays in dry-run mode.
+
+If `ZIP_LINGUAROOM_COMMAND` is set, the LinguaRoom adapter runs that command on stdin/stdout and falls back to the local optimizer if it fails.
+
 ## Compression policies
 
 - `baseline`: no compression.
@@ -38,6 +51,10 @@ Open `reports/latest.md` after running the command. Dry-run results are clearly 
 - `rtk`: deduplicates repeated instructions and filler.
 - `caveman`: terse compression only for low-risk tasks.
 - `zip-auto`: routes by task type and risk, then applies a safe policy mix.
+
+## Research boundary
+
+KV-cache compression is a separate research track, not a shipped Z.I.P. product behavior. It stays out of the core Z.I.P. runtime path and out of benchmark saving claims until a future implementation owns the serving stack and passes its own quality gates.
 
 ## Quality guard
 
@@ -58,6 +75,10 @@ The reusable skill skeleton lives at `skills/zip-token-saver/`.
 ## Reproducibility
 
 The benchmark corpus is JSONL under `benchmarks/tasks/`. Reports include the exact command and dry-run limitations.
+
+Install and deploy notes are in [docs/deploy.md](docs/deploy.md).
+
+CI is defined in `.github/workflows/ci.yml`.
 
 ## Honest limitations
 

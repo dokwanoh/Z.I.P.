@@ -22,6 +22,12 @@ def write_markdown_report(path: Path, results: Sequence[BenchmarkResult], dry_ru
         f"- Rows: {len(results)}",
         f"- Average input-token saving: {average(r.saving_ratio for r in results):.1%}",
         f"- Quality pass rate: {average(1.0 if r.quality_pass else 0.0 for r in results):.1%}",
+        f"- Repeat count: {_unique_field(results, 'repeat_count')}",
+        f"- Cache status: {_unique_field(results, 'cache_status')}",
+        f"- Latency variance/stdev: {average(r.latency_variance_ms for r in results):.3f} / "
+        f"{average(r.latency_stdev_ms for r in results):.3f} ms",
+        f"- Judge provenance: {_unique_field(results, 'judge_provenance')}",
+        f"- Threshold summary: {_threshold_summary(results)}",
         "",
         "## Results",
         "",
@@ -34,12 +40,33 @@ def write_markdown_report(path: Path, results: Sequence[BenchmarkResult], dry_ru
             f"{result.input_tokens_after} | {result.saving_ratio:.1%} | "
             f"{result.quality_score:.2f} | {zip_score(result):.3f} | {result.notes} |"
         )
+    lines.extend(
+        [
+            "",
+            "## Evidence Summary",
+            "",
+            "| task | policy | repeat count | cache status | latency ms | latency variance | latency stdev | judge provenance | threshold summary |",
+            "| --- | --- | ---: | --- | ---: | ---: | ---: | --- | --- |",
+        ],
+    )
+    for result in results:
+        lines.append(
+            f"| {result.task_id} | {result.policy} | {result.repeat_count} | {result.cache_status} | "
+            f"{result.latency_ms} | {result.latency_variance_ms:.3f} | "
+            f"{result.latency_stdev_ms:.3f} | {result.judge_provenance} | "
+            f"{result.threshold_summary} |"
+        )
     lines.extend(["", "## Best Policy Per Task", ""])
     for result in summary.best_results:
         lines.append(f"- {result.task_id}: {result.policy} ({result.saving_ratio:.1%} saving, quality {result.quality_score:.2f})")
     lines.extend(["", "## Best Policy By Workload", ""])
     for task_type, result in _best_by_type(results).items():
         lines.append(f"- {task_type}: {result.policy} ({result.saving_ratio:.1%} saving)")
+    regressions = [result for result in results if (not result.quality_pass) or ("failed" in result.notes.lower())]
+    if regressions:
+        lines.extend(["", "## Regression Notes", ""])
+        for result in regressions[:12]:
+            lines.append(f"- {result.task_id} / {result.policy}: {result.notes}")
     lines.extend(
         [
             "",
@@ -62,3 +89,18 @@ def _best_by_type(results: Sequence[BenchmarkResult]) -> Dict[str, BenchmarkResu
         if current is None or result.saving_ratio > current.saving_ratio:
             best[task_type] = result
     return best
+
+
+def _unique_field(results: Sequence[BenchmarkResult], field_name: str) -> str:
+    values = sorted({str(getattr(result, field_name)) for result in results})
+    if len(values) == 1:
+        return values[0]
+    return ", ".join(values)
+
+
+def _threshold_summary(results: Sequence[BenchmarkResult]) -> str:
+    values = sorted({result.threshold_summary for result in results})
+    if len(values) == 1:
+        return values[0]
+    passed = sum(1 for result in results if result.quality_pass)
+    return f"pass={passed}; fail={len(results) - passed}; pass_threshold>0.820"

@@ -23,3 +23,7 @@ Terse compression is blocked for high-risk, ambiguous, design, security, legal, 
 ## zip-auto
 
 Classify the workload, choose a policy mix, run the guard, and report measured savings only when quality passes.
+
+## KV-cache research boundary
+
+KV-cache compression is a separate research track, not a core prompt-compression policy. The shipped policy surface remains `baseline`, `linguaroom`, `headroom`, `rtk`, `caveman`, and `zip-auto`; any KV-cache experiment must stay documented outside the runtime path until it has independent serving-stack evidence and rollback criteria.
