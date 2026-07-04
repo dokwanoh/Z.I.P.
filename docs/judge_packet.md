@@ -29,27 +29,29 @@ flowchart TD
 Command:
 
 ```bash
-python -m zip_agent.cli benchmark --dataset benchmarks/tasks/korean_coding_prompts.jsonl --policies baseline,linguaroom,headroom,rtk,caveman,zip-auto --report reports/latest.md
+python -m zip_agent.cli benchmark --dataset benchmarks/tasks/korean_coding_prompts.jsonl --policies baseline,linguaroom,headroom,rtk,caveman,zip-auto --repeats 3 --report reports/latest.md
 ```
 
-Dataset: 10 Korean coding-agent tasks, 60 policy result rows.
+Dataset: 22 Korean coding-agent tasks, 132 policy result rows.
 
 Mode: dry-run deterministic fixture mode.
+
+Evidence fields: the markdown report records repeat count, provider cache status, latency variance/stdev, judge provenance, and threshold summary alongside the existing benchmark table.
 
 ## Results Table
 
 | metric | observed dry-run value |
 | --- | ---: |
-| All-policy average input-token saving | 1.6% |
-| All-policy quality-pass rate | 78.3% |
-| Z.I.P. Auto average input-token saving | 3.5% |
-| Z.I.P. Auto quality-pass rate | 90.0% |
+| All-policy average input-token saving | 0.9% |
+| All-policy quality-pass rate | 36.4% |
+| Z.I.P. Auto average input-token saving | 1.8% |
+| Z.I.P. Auto quality-pass rate | 54.5% |
 | Best passing policy row | `kr-debug-001` with `zip-auto`, 22.5% saving |
-| Unsafe Caveman failures caught | 5 |
+| Unsafe Caveman failures caught | 19 |
 
 ## Ablation
 
-Baseline establishes the combined prompt token count. LinguaRoom often improves quality preservation but may increase tokens because the placeholder explicitly lists preserved identifiers. Headroom is conservative in the current short corpus. RTK wins on repeated prompts. Caveman saves tokens in some low-risk rows but is blocked on high-risk rows. Z.I.P. Auto favors quality and accepts modest savings.
+Baseline establishes the combined prompt token count. LinguaRoom often improves quality preservation but may increase tokens because the placeholder explicitly lists preserved identifiers. Headroom is conservative in the current corpus. RTK wins on repeated prompts. Caveman saves tokens in some low-risk rows but is blocked on high-risk rows. Z.I.P. Auto favors quality and accepts modest savings.
 
 ## Failure Cases
 
@@ -71,4 +73,4 @@ Run the benchmark command above, then inspect `reports/latest.md`.
 
 ## Final Claim Statement
 
-In our dry-run benchmark, Z.I.P. Auto reduced 3.5% input tokens on 10 Korean coding-agent tasks while preserving a 90.0% deterministic quality-pass rate. The system achieves this by routing each workload to the safest compression policy and rejecting aggressive compression when the Fablize-inspired quality gate detects risk.
+In our dry-run benchmark, Z.I.P. Auto reduced 1.8% input tokens on 22 Korean coding-agent tasks while preserving a 54.5% deterministic quality-pass rate. The system achieves this by routing each workload to the safest compression policy and rejecting aggressive compression when the Fablize-inspired quality gate detects risk.

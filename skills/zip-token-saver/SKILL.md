@@ -19,3 +19,9 @@ Scripts:
 
 - `scripts/zip_measure.py`
 - `scripts/zip_harness.py`
+
+Command surface parity:
+
+- `commands/zip-save.md` mirrors `claude/commands/zip-save.md` and `hermes/commands/zip-save.md`.
+- `commands/zip-benchmark.md` mirrors `claude/commands/zip-benchmark.md` and `hermes/commands/zip-benchmark.md`.
+- `commands/zip-verify.md` mirrors `claude/commands/zip-verify.md` and `hermes/commands/zip-verify.md`.
